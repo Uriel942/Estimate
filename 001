@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Calculadora de Precios</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .calculator {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #f8f8f8;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f8f8;
+            border-radius: 8px;
+        }
+
+        .result-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .result-line:last-child {
+            border-bottom: none;
+        }
+
+        .total {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid #ddd;
+            font-weight: bold;
+            color: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h2>Calculadora de Precios</h2>
+        
+        <div class="input-group">
+            <label for="originalPrice">Precio Original ($)</label>
+            <input type="number" id="originalPrice" value="0" step="0.01">
+        </div>
+
+        <div class="input-group">
+            <label for="taxes">Impuestos (%)</label>
+            <input type="number" id="taxes" value="0" step="0.01">
+        </div>
+
+        <div class="input-group">
+            <label for="viviTaxes">Vivi Impuestos (%)</label>
+            <input type="number" id="viviTaxes" value="0" step="0.01">
+        </div>
+
+        <div class="input-group">
+            <label for="shipping">Envío ($)</label>
+            <input type="number" id="shipping" value="0" step="0.01">
+        </div>
+
+        <div class="result">
+            <div class="result-line">
+                <span>Precio Original:</span>
+                <span id="showOriginalPrice">$0.00</span>
+            </div>
+            <div class="result-line">
+                <span>Monto de Impuestos:</span>
+                <span id="showTaxesAmount">$0.00</span>
+            </div>
+            <div class="result-line">
+                <span>Monto de Vivi Impuestos:</span>
+                <span id="showViviTaxesAmount">$0.00</span>
+            </div>
+            <div class="result-line">
+                <span>Subtotal (× 21):</span>
+                <span id="showSubtotal">$0.00</span>
+            </div>
+            <div class="result-line">
+                <span>Envío:</span>
+                <span id="showShipping">$0.00</span>
+            </div>
+            <div class="result-line total">
+                <span>Total Final:</span>
+                <span id="showTotal">$0.00</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para formatear números como moneda
+        function formatCurrency(number) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(number);
+        }
+
+        // Función principal de cálculo
+        function calculateAll() {
+            // Obtener valores de los inputs
+            var originalPrice = parseFloat(document.getElementById('originalPrice').value) || 0;
+            var taxes = parseFloat(document.getElementById('taxes').value) || 0;
+            var viviTaxes = parseFloat(document.getElementById('viviTaxes').value) || 0;
+            var shipping = parseFloat(document.getElementById('shipping').value) || 0;
+
+            // Calcular impuestos regulares
+            var taxesAmount = originalPrice * (taxes / 100);
+            var priceWithTaxes = originalPrice + taxesAmount;
+
+            // Calcular Vivi impuestos
+            var viviTaxesAmount = priceWithTaxes * (viviTaxes / 100);
+            var priceWithAllTaxes = priceWithTaxes + viviTaxesAmount;
+
+            // Calcular subtotal (× 21)
+            var subtotal = priceWithAllTaxes * 21;
+
+            // Calcular total final
+            var total = subtotal + shipping;
+
+            // Actualizar valores en pantalla
+            document.getElementById('showOriginalPrice').textContent = formatCurrency(originalPrice);
+            document.getElementById('showTaxesAmount').textContent = formatCurrency(taxesAmount);
+            document.getElementById('showViviTaxesAmount').textContent = formatCurrency(viviTaxesAmount);
+            document.getElementById('showSubtotal').textContent = formatCurrency(subtotal);
+            document.getElementById('showShipping').textContent = formatCurrency(shipping);
+            document.getElementById('showTotal').textContent = formatCurrency(total);
+        }
+
+        // Agregar event listeners a todos los inputs
+        var inputs = document.querySelectorAll('input');
+        inputs.forEach(function(input) {
+            input.addEventListener('input', calculateAll);
+        });
+
+        // Calcular inicialmente
+        calculateAll();
+    </script>
+</body>
+</html>
